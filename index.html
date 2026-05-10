@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Shop</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1a1f2b, #0b0f14);
+  font-family: Arial, sans-serif;
+  color: #e6e6e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  padding: 20px;
+}
+
+.wrap {
+  width: 500px;
+  max-width: 95vw;
+}
+
+h2 {
+  text-align: center;
+  color: #9ad0ff;
+  letter-spacing: 2px;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #4da3ff, #7c5cff);
+  color: white;
+  font-weight: bold;
+}
+
+.button {
+  display: block;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  background: linear-gradient(90deg, #4da3ff, #7c5cff);
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.page {
+  display: none;
+  padding: 20px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #121826, #0e141f);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.page.active {
+  display: block;
+}
+
+.item {
+  margin: 10px 0;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+}
+
+.item:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.small {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.top-right {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  gap: 8px;
+  z-index: 999;
+}
+
+.top-right a {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #4da3ff, #7c5cff);
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-right" id="topRight">
+  <a href="about.html" id="aboutBtn">About</a>
+  <a href="log.html" id="loginBtn">Log in</a>
+  <a href="sign.html" id="signupBtn">Sign Up</a>
+</div>
+
+<div class="wrap">
+
+  <h2>6b6t Shop</h2>
+
+  <div class="nav">
+    <button onclick="show('items')">Items</button>
+    <button onclick="show('kits')">Kits</button>
+    <button onclick="show('sell')">Sell</button>
+  </div>
+
+J  <div id="home" class="page active">
+    <div class="item" onclick="show('items')">6b6t Shop</div>
+    <div class="item small">A shop for the minecraft server 6b6t!</div>
+  </div>
+
+  <div id="items" class="page">
+    <a class="button" href="2p.html">Voucher</a>
+    <a class="button" href="4p.html">Resin</a>
+	<a class="button" href="5p.html">Shulker Box</a>
+	<a class="button" href="6p.html">Employee Manual</a>
+  </div>
+
+  <div id="kits" class="page">
+    <a class="button" href="1p.html">PVP Kit</a>
+    <a class="button" href="3p.html">Money Kit</a>
+  </div>
+
+  <div id="sell" class="page">
+    <p>Choose an item to sell</p>
+    <a class="button" href="1s.html">PVP Kit</a>
+    <a class="button" href="2s.html">Money Kit</a>
+    <a class="button" href="3s.html">Resin</a>
+	<a class="button" href="4s.html">Shulker Box</a>
+  </div>
+
+</div>
+
+<script>
+const EMAILJS_PUBLIC_KEY = "Z7TS3Sin5ikbaot1i";
+const EMAILJS_SERVICE_ID = "service_61h8yo3";
+const EMAILJS_TEMPLATE_ID = "template_y4z85bt";
+
+function show(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+  const loggedInUser = localStorage.getItem("loggedInUser");
+
+  if (loggedInUser) {
+    document.getElementById("loginBtn").style.display = "none";
+    document.getElementById("signupBtn").style.display = "none";
+
+    const user = JSON.parse(loggedInUser);
+
+    if (user.email) {
+      localStorage.setItem("userEmail", user.email);
+    }
+  }
+
+  const orderCount = parseInt(localStorage.getItem("orderCount") || "0", 10);
+  const sentFive = localStorage.getItem("sentFiveOrders");
+
+  if (orderCount >= 5 && !sentFive && localStorage.getItem("userEmail")) {
+    try {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        email: localStorage.getItem("userEmail"),
+        message: "You got a free voucher!"
+      });
+
+      localStorage.setItem("sentFiveOrders", "0");
+    } catch (err) {
+      console.error(err);
+    }
+  }
+});
+</script>
+
+</body>
+</html>

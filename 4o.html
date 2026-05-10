@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Order</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #1a1f2b, #0b0f14);
+  font-family: Arial, sans-serif;
+  color: #e6e6e6;
+  padding: 20px;
+}
+
+.card {
+  width: 380px;
+  max-width: 95vw;
+  background: linear-gradient(145deg, #121826, #0e141f);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+h2 {
+  margin: 0 0 24px 0;
+  font-size: 16px;
+  letter-spacing: 2px;
+  text-align: center;
+  color: #9ad0ff;
+}
+
+label {
+  font-size: 12px;
+  color: #aaa;
+  display: block;
+  margin-top: 16px;
+}
+
+input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  margin-top: 22px;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #4da3ff, #7c5cff);
+  color: white;
+  font-weight: bold;
+}
+
+#status {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.85;
+}
+</style>
+
+<script>
+const EMAILJS_PUBLIC_KEY = "Z7TS3Sin5ikbaot1i";
+const EMAILJS_SERVICE_ID = "service_61h8yo3";
+const EMAILJS_TEMPLATE_ID = "template_46n01fk";
+
+const MESSAGE_PREFIX = "Someone ordered some resin.\n\nDetails:\n";
+
+let emailReady = false;
+let loggedIn = false;
+
+window.addEventListener("DOMContentLoaded", () => {
+  const status = document.getElementById("status");
+
+  loggedIn = !!localStorage.getItem("loggedInUser");
+
+  if (!loggedIn) {
+    status.textContent = "You must log in first.";
+    document.querySelector("button").disabled = true;
+    return;
+  }
+
+  if (window.emailjs) {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    emailReady = true;
+    status.textContent = "";
+  } else {
+    status.textContent = "EmailJS failed to load.";
+  }
+});
+
+async function sendEmail() {
+  const input1 = document.getElementById("input1").value.trim();
+  const input2 = document.getElementById("input2").value.trim();
+  const input3 = document.getElementById("input3").value.trim();
+  const status = document.getElementById("status");
+
+  if (!loggedIn) {
+    status.textContent = "You must log in first.";
+    return;
+  }
+
+  if (!input1 || !input2 || !input3) {
+    status.textContent = "Please fill in all fields.";
+    return;
+  }
+
+  const fullMessage =
+    MESSAGE_PREFIX +
+    "Base Coords: " + input1 + "\n" +
+    "Username: " + input2 + "\n" +
+    "Dimension: " + input3;
+
+  if (!emailReady) {
+    status.textContent = "Email not ready.";
+    return;
+  }
+
+  status.textContent = "";
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      message: fullMessage
+    });
+
+    let orderCount = parseInt(localStorage.getItem("orderCount") || "0", 10);
+    orderCount++;
+    localStorage.setItem("orderCount", orderCount);
+
+    status.textContent = "Ordered!";
+  } catch (err) {
+    status.textContent = "Failed: " + (err?.text || err?.message || err);
+    console.error(err);
+  }
+}
+</script>
+</head>
+
+<body>
+<div class="card">
+  <h2>Order info</h2>
+
+  <label>Base Coords
+    <input id="input1" type="text" placeholder="" />
+  </label>
+
+  <label>Username
+    <input id="input2" type="text" placeholder="" />
+  </label>
+
+  <label>Dimension
+    <input id="input3" type="text" placeholder="" />
+  </label>
+
+  <button onclick="sendEmail()">Order</button>
+
+  <div id="status"></div>
+</div>
+</body>
+</html>
