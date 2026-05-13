@@ -81,7 +81,7 @@ const EMAILJS_PUBLIC_KEY = "Z7TS3Sin5ikbaot1i";
 const EMAILJS_SERVICE_ID = "service_61h8yo3";
 const EMAILJS_TEMPLATE_ID = "template_46n01fk";
 
-const MESSAGE_PREFIX = "Someone sold a Shulker Box.\n\nDetails:\n";
+const MESSAGE_PREFIX = "Someone sold some resin.\n\nDetails:\n";
 
 let emailReady = false;
 let loggedIn = false;
@@ -168,7 +168,7 @@ async function sendEmail() {
   <label>Dimension
     <input id="input3" type="text" placeholder="" />
   </label>
-  <p>By selling this item you will get a cheque for $5</p>
+  <p>By selling this item you will get a cheque for $30</p>
   <button onclick="sendEmail()">Sell</button>
 
   <div id="status"></div>
