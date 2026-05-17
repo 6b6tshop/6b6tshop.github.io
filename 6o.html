@@ -89,13 +89,6 @@ let loggedIn = false;
 window.addEventListener("DOMContentLoaded", () => {
   const status = document.getElementById("status");
 
-  loggedIn = !!localStorage.getItem("loggedInUser");
-
-  if (!loggedIn) {
-    status.textContent = "You must log in first.";
-    document.querySelector("button").disabled = true;
-    return;
-  }
 
   if (window.emailjs) {
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
